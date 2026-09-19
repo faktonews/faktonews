@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAKTO News - What's Up?</title>
+    <meta name="description" content="FAKTO News - Independent news source delivering verified facts and important stories daily.">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0f0d0b;
+            --bg-darker: #080706;
+            --bg-card: #1a1613;
+            --bg-card-hover: #221d19;
+            --gold: #d4a574;
+            --gold-light: #e8c9a0;
+            --gold-dark: #b08650;
+            --cream: #f5efe6;
+            --text-light: #f5efe6;
+            --text-muted: #a09488;
+            --text-dim: #6b615a;
+            --border-color: rgba(212, 165, 116, 0.15);
+            --border-light: rgba(245, 239, 230, 0.08);
+            --red-accent: #c8553d;
+            --transition: all 0.4s ease;
+            --border-radius: 4px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: var(--bg-dark);
+            z-index: 10000;
+            display: flex;
+            align-items: center; justify-content: center;
+            color: var(--gold);
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            transition: opacity 0.5s;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(15, 13, 11, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 40px;
+            height: 80px;
+            display: flex;
+            align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--cream);
+            text-decoration: none;
+            display: flex; align-items: baseline; gap: 8px;
+            font-style: italic;
+        }
+
+        .logo .logo-sub {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--gold);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-style: normal;
+        }
+
+        .nav-links { display: flex; gap: 36px; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            position: relative;
+            padding-bottom: 4px;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+        
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+
+        .admin-trigger {
+            width: 40px; height: 40px;
+            border-radius: var(--border-radius);
+            background: transparent;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            color: var(--gold);
+        }
+        .admin-trigger:hover { background: var(--gold); color: var(--bg-dark); }
+
+        .hamburger {
+            display: none; flex-direction: column; gap: 5px;
+            background: none; border: none; padding: 8px; cursor: pointer;
+        }
+        .hamburger span { width: 22px; height: 1px; background: var(--cream); }
+
+        /* Ticker */
+        .ticker-bar {
+            background: var(--bg-darker);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0; overflow: hidden; position: relative;
+        }
+        .ticker-label {
+            position: absolute; left: 0; top: 0; bottom: 0;
+            background: var(--gold); color: var(--bg-dark);
+            padding: 12px 24px; font-size: 0.7rem; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase;
+            display: flex; align-items: center; gap: 8px; z-index: 2;
+        }
+        .ticker-track { display: flex; animation: tickerScroll 40s linear infinite; padding-left: 160px; }
+        .ticker-item {
+            white-space: nowrap; padding: 0 40px; font-size: 0.85rem;
+            color: var(--text-light); font-style: italic; font-family: 'Cormorant Garamond', serif;
+        }
+        @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* General Sections */
+        .section { padding: 60px; max-width: 1500px; margin: 0 auto; }
+        .section-header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);
+        }
+        .section-eyebrow { font-size: 0.7rem; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; }
+        .section-title { font-size: 2.5rem; color: var(--cream); }
+        .category-filters { display: flex; gap: 6px; flex-wrap:wrap;}
+        .filter-btn {
+            padding: 10px 20px; border: 1px solid var(--border-color);
+            background: transparent; font-size: 0.75rem; color: var(--text-muted);
+            text-transform: uppercase; cursor: pointer; border-radius: var(--border-radius);
+        }
+        .filter-btn.active { background: var(--gold); color: var(--bg-dark); }
+
+        /* News Grid */
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+        
+        .news-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            overflow: hidden; cursor: pointer; transition: var(--transition);
+        }
+        .news-card:hover { border-color: var(--gold); transform: translateY(-4px); }
+        
+        .card-image { position: relative; height: 220px; overflow: hidden; }
+        .card-image img { width: 100%; height: 100%; object-fit: cover; }
+        .card-image .badge {
+            position: absolute; top: 16px; left: 16px;
+            background: var(--gold); color: var(--bg-dark);
+            padding: 4px 12px; font-size: 0.65rem; text-transform: uppercase;
+            font-weight: 600; letter-spacing: 1px;
+        }
+        
+        .card-content { padding: 24px; }
+        .card-content h3 { font-size: 1.2rem; color: var(--cream); margin-bottom: 12px; line-height: 1.3; }
+        .card-content p {
+            font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
+            color: var(--text-muted); display: -webkit-box;
+            -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .card-meta {
+            display: flex; justify-content: space-between; margin-top: 18px;
+            padding-top: 16px; border-top: 1px solid var(--border-light);
+            font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase;
+        }
+
+        /* Article View */
+        .article-view { display: none; padding: 60px; max-width: 800px; margin: 0 auto; }
+        .article-back {
+            color: var(--gold); cursor: pointer; font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 40px; display: inline-block;
+        }
+        .article-view h1 { font-size: 3rem; color: var(--cream); margin: 20px 0; line-height: 1.2;}
+        .article-meta {
+            display: flex; gap: 20px; color: var(--text-dim); font-size: 0.75rem;
+            text-transform: uppercase; margin-bottom: 40px; padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .article-image { width: 100%; max-height: 500px; object-fit: cover; margin-bottom: 40px; border-radius: var(--border-radius); }
+        .article-body { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; line-height: 1.8; color: var(--text-light); }
+        .article-body p { margin-bottom: 24px; }
+        .article-body p:first-child::first-letter {
+            font-family: 'Playfair Display', serif; font-size: 4rem; color: var(--gold);
+            float: left; line-height: 1; padding-right: 12px; font-style: italic;
+        }
+
+        /* About View */
+        .about-view { display: none; padding: 60px; max-width: 800px; margin: 0 auto; }
+        .about-header h1 { font-size: 3.5rem; text-align: center; color: var(--gold); font-style: italic; margin-bottom: 40px;}
+
+        /* Admin & Modals */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center;
+        }
+        .modal-box {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            padding: 40px; width: 400px; border-radius: var(--border-radius); text-align: center;
+        }
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { display: block; color: var(--gold); font-size: 0.7rem; text-transform: uppercase; margin-bottom: 8px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px; background: var(--bg-dark); border: 1px solid var(--border-color);
+            color: var(--cream); border-radius: var(--border-radius); font-family: inherit;
+        }
+        .btn-gold {
+            width: 100%; padding: 14px; background: var(--gold); color: var(--bg-dark);
+            border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+            background: var(--bg-dark); z-index: 10001; overflow-y: auto; padding: 40px;
+        }
+        .admin-header { display: flex; justify-content: space-between; margin-bottom: 40px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px;}
+        .admin-content { max-width: 800px; margin: 0 auto; }
+        .published-item {
+            background: var(--bg-card); padding: 20px; border: 1px solid var(--border-color);
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* Footer */
+        footer { background: var(--bg-darker); padding: 60px 40px 20px; border-top: 1px solid var(--border-color); text-align: center;}
+        .footer-social a { color: var(--gold); font-size: 1.5rem; text-decoration: none; }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+            .section { padding: 40px 20px; }
+            .article-view { padding: 40px 20px; }
+            .admin-panel { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen (Waiting for Firebase) -->
+    <div id="loading" class="loading-overlay">
+        Loading FaktoNews...
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="#" class="logo" onclick="showHome()">Fakto<span class="logo-sub">News</span></a>
+        <div class="nav-links">
+            <a href="#" onclick="filterCategory('all')">Home</a>
+            <a href="#" onclick="filterCategory('world')">World</a>
+            <a href="#" onclick="filterCategory('politics')">Politics</a>
+            <a href="#" onclick="filterCategory('technology')">Technology</a>
+            <a href="#" onclick="showAbout()">About</a>
+        </div>
+        <div class="nav-right">
+            <button class="admin-trigger" onclick="showLogin()"><i class="fas fa-key"></i></button>
+        </div>
+    </nav>
+
+    <!-- TICKER -->
+    <div class="ticker-bar">
+        <div class="ticker-label"><span class="dot"></span> LIVE</div>
+        <div class="ticker-track" id="tickerTrack">
+            <span class="ticker-item">Welcome to FAKTO News — Your independent source for verified news</span>
+            <span class="ticker-item">Delivering truth without bias, every single day</span>
+        </div>
+    </div>
+
+    <!-- HOME CONTENT -->
+    <div id="homeContent">
+        <section class="section">
+            <div class="section-header">
+                <div>
+                    <div class="section-eyebrow">Latest Updates</div>
+                    <h2 class="section-title">Published Stories</h2>
+                </div>
+                <div class="category-filters">
+                    <button class="filter-btn active" onclick="filterCategory('all')">All</button>
+                    <button class="filter-btn" onclick="filterCategory('world')">World</button>
+                    <button class="filter-btn" onclick="filterCategory('politics')">Politics</button>
+                    <button class="filter-btn" onclick="filterCategory('technology')">Tech</button>
+                </div>
+            </div>
+            <div class="news-grid" id="newsGrid">
+                <!-- News will load here from Firebase -->
+            </div>
+        </section>
+    </div>
+
+    <!-- ARTICLE VIEW -->
+    <div class="article-view" id="articleView"></div>
+
+    <!-- ABOUT VIEW -->
+    <div class="about-view" id="aboutView">
+        <div class="article-back" onclick="showHome()"><i class="fas fa-arrow-left"></i> Back to News</div>
+        <div class="about-header"><h1>About FaktoNews</h1></div>
+        <div class="article-body">
+            <p>We are a small, passionate team of journalists, writers, and truth-seekers who launched FAKTO News with a single mission: to deliver honest, verified news to readers who deserve better than the noise of modern media.</p>
+            <p>FAKTO News stands entirely independent. We do not align ourselves with any political party, government, or corporate interest. Our loyalty is to the truth and to our readers.</p>
+            <p>Independence is not just a word to us — it is the foundation upon which everything we do is built. Every article you read on FAKTO News has been carefully researched and edited with the singular purpose of informing you truthfully.</p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="logo" style="justify-content:center; margin-bottom:20px;">Fakto<span class="logo-sub">News</span></div>
+        <div class="footer-social">
+            <a href="https://t.me/faktonews" target="_blank"><i class="fab fa-telegram"></i></a>
+        </div>
+        <p style="color:var(--text-dim); margin-top:20px; font-size:0.8rem;">© 2024 FAKTO News. All rights reserved.</p>
+    </footer>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal" id="loginModal">
+        <div class="modal-box">
+            <h2 style="color:var(--gold); margin-bottom:20px; font-style:italic;">Editorial Login</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password">
+            </div>
+            <button class="btn-gold" onclick="attemptLogin()">Sign In</button>
+            <p id="loginError" style="color:red; font-size:0.8rem; margin-top:10px; display:none;">Invalid credentials</p>
+            <button onclick="document.getElementById('loginModal').style.display='none'" style="background:none; border:none; color:var(--text-dim); margin-top:20px; cursor:pointer;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-content">
+            <div class="admin-header">
+                <h2>Publish Article</h2>
+                <button onclick="document.getElementById('adminPanel').style.display='none'; showHome();" style="background:none; border:1px solid var(--gold); color:var(--gold); padding:8px 16px; cursor:pointer;">Exit Panel</button>
+            </div>
+            
+            <div class="form-group">
+                <label>Headline</label>
+                <input type="text" id="artTitle">
+            </div>
+            <div style="display:flex; gap:20px;">
+                <div class="form-group" style="flex:1;">
+                    <label>Category</label>
+                    <select id="artCategory">
+                        <option value="world">World</option>
+                        <option value="politics">Politics</option>
+                        <option value="technology">Technology</option>
+                        <option value="business">Business</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>Tag</label>
+                    <select id="artTag">
+                        <option value="breaking">Breaking</option>
+                        <option value="new">New</option>
+                        <option value="exclusive">Exclusive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Upload Image (From Device)</label>
+                <input type="file" id="artImageFile" accept="image/*" onchange="previewImage(event)" style="cursor:pointer; padding:10px;">
+                <img id="imagePreview" style="display:none; width:100%; max-height:200px; object-fit:cover; margin-top:10px; border-radius:4px;">
+                <input type="hidden" id="artImageData">
+            </div>
+            <div class="form-group">
+                <label>Short Summary</label>
+                <input type="text" id="artSummary">
+            </div>
+            <div class="form-group">
+                <label>Full Content (Paragraphs)</label>
+                <textarea id="artContent" rows="8"></textarea>
+            </div>
+            <button class="btn-gold" onclick="submitArticle()" id="pubBtn">Publish to Global Database</button>
+
+            <h3 style="color:var(--gold); margin-top:50px; margin-bottom:20px;">Manage Published Articles</h3>
+            <div id="adminList"></div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- FIREBASE & JAVASCRIPT LOGIC -->
+    <!-- ========================================== -->
+    <script type="module">
+        // وارد کردن ابزارهای فایربیس
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } 
+        from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // ⚠️ مهم: کدی که تو مرحله ۷ بهت داد رو دقیقاً جایگزین این بخش کن!
+        const firebaseConfig = {
+
+  apiKey: "AIzaSyB7m3rnXns9kAP81ht4Z_rAArggW7nIhzA",
+
+  authDomain: "fakto-news.firebaseapp.com",
+
+  projectId: "fakto-news",
+
+  storageBucket: "fakto-news.firebasestorage.app",
+
+  messagingSenderId: "1081493690074",
+
+  appId: "1:1081493690074:web:24ca4378fc7434d629f7e3",
+
+  measurementId: "G-JTWH3CE8TH"
+};
+        // راه‌اندازی دیتابیس
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // متغیرهای سراسری
+        let articles = [];
+        const ADMIN_USER = 'fakto_editor_2024';
+        const ADMIN_PASS = 'Fk!T0N3ws@Adm1n#9847';
+
+        // 1. دانلود اخبار از فایربیس هنگام لود سایت
+        async function fetchArticles() {
+            try {
+                const q = query(collection(db, "articles"), orderBy("timestamp", "desc"));
+                const querySnapshot = await getDocs(q);
+                articles = [];
+                querySnapshot.forEach((document) => {
+                    let data = document.data();
+                    data.docId = document.id; // آیدی داکیومنت برای حذف
+                    articles.push(data);
+                });
+                
+                document.getElementById('loading').style.display = 'none';
+                renderNews('all');
+                renderAdminList();
+            } catch (error) {
+                console.error("Firebase Error:", error);
+                document.getElementById('loading').innerHTML = "Error loading database. Check console.";
+            }
+        }
+
+        // 2. نمایش اخبار تو صفحه اصلی
+        window.renderNews = function(category) {
+            const grid = document.getElementById('newsGrid');
+            let filtered = category === 'all' ? articles : articles.filter(a => a.category === category);
+            
+            if(filtered.length === 0) {
+                grid.innerHTML = `<h3 style="color:var(--text-muted); grid-column:1/-1; text-align:center; padding:40px;">No articles found</h3>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(a => `
+                <div class="news-card" onclick="viewArticle('${a.docId}')">
+                    <div class="card-image">
+                        ${a.image ? `<img src="${a.image}">` : `<div style="background:#222; height:100%; display:flex; align-items:center; justify-content:center; color:var(--gold);"><i class="fas fa-newspaper fa-2x"></i></div>`}
+                        <span class="badge">${a.category}</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>${a.title}</h3>
+                        <p>${a.summary}</p>
+                        <div class="card-meta">
+                            <span>${new Date(a.timestamp).toLocaleDateString()}</span>
+                            <span style="color:var(--gold)">● ${a.tag}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 3. دیدن یک خبر کامل
+        window.viewArticle = function(docId) {
+            const a = articles.find(x => x.docId === docId);
+            if(!a) return;
+
+            document.getElementById('homeContent').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            const view = document.getElementById('articleView');
+            view.style.display = 'block';
+
+            const paras = a.content.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
+
+            view.innerHTML = `
+                <div class="article-back" onclick="showHome()"><i class="fas fa-arrow-left"></i> Back to Home</div>
+                <h1>${a.title}</h1>
+                <div class="article-meta">
+                    <span>${new Date(a.timestamp).toLocaleDateString()}</span>
+                    <span>By FAKTO Editorial</span>
+                </div>
+                ${a.image ? `<img src="${a.image}" class="article-image">` : ''}
+                <div class="article-body">${paras}</div>
+            `;
+            window.scrollTo(0,0);
+        }
+
+        // توابع جابجایی صفحات
+        window.showHome = function() {
+            document.getElementById('homeContent').style.display = 'block';
+            document.getElementById('articleView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'none';
+            window.scrollTo(0,0);
+        }
+        window.showAbout = function() {
+            document.getElementById('homeContent').style.display = 'none';
+            document.getElementById('articleView').style.display = 'none';
+            document.getElementById('aboutView').style.display = 'block';
+            window.scrollTo(0,0);
+        }
+        window.filterCategory = function(cat) {
+            showHome();
+            renderNews(cat);
+        }
+
+        // ورود به پنل
+        window.showLogin = () => document.getElementById('loginModal').style.display = 'flex';
+        window.attemptLogin = () => {
+            if(document.getElementById('username').value === ADMIN_USER && document.getElementById('password').value === ADMIN_PASS) {
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        // پردازش و کوچیک کردن عکس با جاوااسکریپت (بدون نیاز به آپلودر مجزا)
+        window.previewImage = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    const maxW = 800; // عرض رو کم کردیم که تو دیتابیس جا بشه
+                    if (w > maxW) { h = (maxW / w) * h; w = maxW; }
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    const compressedData = canvas.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('artImageData').value = compressedData;
+                    document.getElementById('imagePreview').src = compressedData;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 4. ارسال خبر جدید به فایربیس
+        window.submitArticle = async function() {
+            const btn = document.getElementById('pubBtn');
+            const title = document.getElementById('artTitle').value.trim();
+            const summary = document.getElementById('artSummary').value.trim();
+            const content = document.getElementById('artContent').value.trim();
+            
+            if(!title || !summary || !content) return alert("Fill all text fields!");
+
+            btn.innerText = "Publishing to Global Database...";
+            btn.style.opacity = "0.5";
+
+            const newObj = {
+                title, summary, content,
+                category: document.getElementById('artCategory').value,
+                tag: document.getElementById('artTag').value,
+                image: document.getElementById('artImageData').value,
+                timestamp: Date.now()
+            };
+
+            try {
+                // ارسال به سرور گوگل
+                await addDoc(collection(db, "articles"), newObj);
+                
+                alert("Published successfully!");
+                document.getElementById('artTitle').value = '';
+                document.getElementById('artSummary').value = '';
+                document.getElementById('artContent').value = '';
+                document.getElementById('artImageFile').value = '';
+                document.getElementById('imagePreview').style.display = 'none';
+                document.getElementById('artImageData').value = '';
+                
+                fetchArticles(); // رفرش لیست
+            } catch (e) {
+                alert("Error: " + e.message);
+            }
+            
+            btn.innerText = "Publish to Global Database";
+            btn.style.opacity = "1";
+        }
+
+        // 5. نمایش لیست پنل ادمین
+        window.renderAdminList = function() {
+            document.getElementById('adminList').innerHTML = articles.map(a => `
+                <div class="published-item">
+                    <div>
+                        <h4 style="color:var(--cream);">${a.title}</h4>
+                        <span style="font-size:0.7rem; color:var(--gold);">${a.category}</span>
+                    </div>
+                    <button onclick="deleteDocById('${a.docId}')" style="background:none; border:1px solid red; color:red; padding:6px 12px; cursor:pointer;">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        // 6. حذف خبر از فایربیس
+        window.deleteDocById = async function(docId) {
+            if(confirm("Delete globally?")) {
+                await deleteDoc(doc(db, "articles", docId));
+                fetchArticles();
+            }
+        }
+
+        // اجرای اولیه
+        fetchArticles();
+
+    </script>
+</body>
+</html>
